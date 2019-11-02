@@ -209,20 +209,36 @@ def runWorld():
     space.gravity = (0.0, -900.0)
 
     # Limit switch with bottle bottom
-    space.add_collision_handler(0x1, 0x2, begin=bottle_in_place)
+    space.add_collision_handler(0x1, 0x2)
     # Level sensor with water
-    space.add_collision_handler(0x4, 0x5, begin=level_ok)
+    space.add_collision_handler(0x4, 0x5)
     # Level sensor with ground
-    space.add_collision_handler(0x4, 0x6, begin=no_collision)
+    space.add_collision_handler(0x4, 0x6)
     # Limit switch with ground
-    space.add_collision_handler(0x1, 0x6, begin=no_collision)
+    space.add_collision_handler(0x1, 0x6)
     # Limit switch with bottle side
-    space.add_collision_handler(0x1, 0x3, begin=no_collision)
+    space.add_collision_handler(0x1, 0x3)
     # Level sensor with bottle side
-    space.add_collision_handler(0x4, 0x3, begin=no_collision)
+    space.add_collision_handler(0x4, 0x3)
     # Bottle in with bottle sides and bottom
-    space.add_collision_handler(0x7, 0x2, begin=no_collision, separate=add_new_bottle)
-    space.add_collision_handler(0x7, 0x3, begin=no_collision)
+    space.add_collision_handler(0x7, 0x2)
+    space.add_collision_handler(0x7, 0x3)
+
+    # # Limit switch with bottle bottom
+    # space.add_collision_handler(0x1, 0x2, begin=bottle_in_place)
+    # # Level sensor with water
+    # space.add_collision_handler(0x4, 0x5, begin=level_ok)
+    # # Level sensor with ground
+    # space.add_collision_handler(0x4, 0x6, begin=no_collision)
+    # # Limit switch with ground
+    # space.add_collision_handler(0x1, 0x6, begin=no_collision)
+    # # Limit switch with bottle side
+    # space.add_collision_handler(0x1, 0x3, begin=no_collision)
+    # # Level sensor with bottle side
+    # space.add_collision_handler(0x4, 0x3, begin=no_collision)
+    # # Bottle in with bottle sides and bottom
+    # space.add_collision_handler(0x7, 0x2, begin=no_collision, separate=add_new_bottle)
+    # space.add_collision_handler(0x7, 0x3, begin=no_collision)
 
     base = add_base(space)
     nozzle = add_nozzle(space)

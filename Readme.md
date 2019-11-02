@@ -14,3 +14,8 @@ easy_install http://www.voidspace.org.uk/python/pycrypto-2.6.1/pycrypto-2.6.1.wi
 ```
 
 3. [Install python GTK package](https://pygobject.readthedocs.io/en/latest/getting_started.html#windows-getting-started)
+
+4. Fix twisted.internet issue
+```bash
+sudo apt-get install python-twisted
+```
