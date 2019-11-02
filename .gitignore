@@ -1,0 +1,11 @@
+*.pyo
+*.pyc
+*~
+docs/
+media/
+apns/
+bk/
+credentials.json
+*.sqlite3
+venv/
+.vscode/
