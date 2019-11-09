@@ -26,7 +26,6 @@ import pymunk
 #########################################
 # inet conf
 #########################################
-# MODBUS_SERVER_IP = "scada" ##
 MODBUS_SERVER_IP = "localhost" ##
 MODBUS_SERVER_PORT = 502 ##
 
@@ -76,8 +75,8 @@ def add_ball(space):
     radius = 3
     inertia = pymunk.moment_for_circle(mass, 0, radius, (0,0))
     body = pymunk.Body(mass, inertia)
-    body._bodycontents.v_limit = 120
-    body._bodycontents.h_limit = 1
+    # body._bodycontents.v_limit = 120
+    # body._bodycontents.h_limit = 1
     x = random.randint(181,182)
     body.position = x, 410
     shape = pymunk.Circle(body, radius, (0,0))
@@ -209,36 +208,20 @@ def runWorld():
     space.gravity = (0.0, -900.0)
 
     # Limit switch with bottle bottom
-    space.add_collision_handler(0x1, 0x2)
+    space.add_collision_handler(0x1, 0x2, begin=bottle_in_place)
     # Level sensor with water
-    space.add_collision_handler(0x4, 0x5)
+    space.add_collision_handler(0x4, 0x5, begin=level_ok)
     # Level sensor with ground
-    space.add_collision_handler(0x4, 0x6)
+    space.add_collision_handler(0x4, 0x6, begin=no_collision)
     # Limit switch with ground
-    space.add_collision_handler(0x1, 0x6)
+    space.add_collision_handler(0x1, 0x6, begin=no_collision)
     # Limit switch with bottle side
-    space.add_collision_handler(0x1, 0x3)
+    space.add_collision_handler(0x1, 0x3, begin=no_collision)
     # Level sensor with bottle side
-    space.add_collision_handler(0x4, 0x3)
+    space.add_collision_handler(0x4, 0x3, begin=no_collision)
     # Bottle in with bottle sides and bottom
-    space.add_collision_handler(0x7, 0x2)
-    space.add_collision_handler(0x7, 0x3)
-
-    # # Limit switch with bottle bottom
-    # space.add_collision_handler(0x1, 0x2, begin=bottle_in_place)
-    # # Level sensor with water
-    # space.add_collision_handler(0x4, 0x5, begin=level_ok)
-    # # Level sensor with ground
-    # space.add_collision_handler(0x4, 0x6, begin=no_collision)
-    # # Limit switch with ground
-    # space.add_collision_handler(0x1, 0x6, begin=no_collision)
-    # # Limit switch with bottle side
-    # space.add_collision_handler(0x1, 0x3, begin=no_collision)
-    # # Level sensor with bottle side
-    # space.add_collision_handler(0x4, 0x3, begin=no_collision)
-    # # Bottle in with bottle sides and bottom
-    # space.add_collision_handler(0x7, 0x2, begin=no_collision, separate=add_new_bottle)
-    # space.add_collision_handler(0x7, 0x3, begin=no_collision)
+    space.add_collision_handler(0x7, 0x2, begin=no_collision, separate=add_new_bottle)
+    space.add_collision_handler(0x7, 0x3, begin=no_collision)
 
     base = add_base(space)
     nozzle = add_nozzle(space)
@@ -373,5 +356,4 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
-
 
