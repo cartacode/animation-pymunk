@@ -299,6 +299,12 @@ def runWorld():
 
         # Draw the base and nozzle
         draw_polygon(screen, base)
+        # pv1 = base.body.position + base.a.rotated(base.body.angle)
+        # pv2 = base.body.position + line.b.rotated(base.body.angle)
+        # p1 = to_pygame(pv1)
+        # p2 = to_pygame(pv2)
+        # pygame.draw.lines(screen, THECOLORS['green'], False, [p1,p2])
+
         draw_polygon(screen, nozzle)
         # Draw the limit switch
         draw_ball(screen, limit_switch, THECOLORS['green'])
