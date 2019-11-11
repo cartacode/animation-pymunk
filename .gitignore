@@ -8,4 +8,5 @@ bk/
 credentials.json
 *.sqlite3
 venv/
+env/
 .vscode/
