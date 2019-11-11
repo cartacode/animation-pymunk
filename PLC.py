@@ -126,7 +126,7 @@ def add_nozzle(space):
 def add_base(space):
     body = pymunk.Body()
     body.position = (0, 300)
-    shape = pymunk.Poly.create_box(body, (SCREEN_WIDTH, 20), ((SCREEN_WIDTH/2), -10), 0)
+    shape = pymunk.Poly.create_box(body, (SCREEN_WIDTH, 20), (0, 0), 0)
     shape.friction = 1.0
     shape.collision_type = 0x6 # base
     space.add(shape)
