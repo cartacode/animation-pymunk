@@ -80,7 +80,7 @@ def add_ball(space):
     inertia = pymunk.moment_for_circle(mass, 0, radius, (0,0))
     body = pymunk.Body(mass, inertia)
 
-    x = random.randint(SCREEN_WIDTH / 2 - 40, SCREEN_WIDTH / 2 - 39)
+    x = random.randint(181,182)
     body.position = x, 400
     shape = pymunk.Circle(body, radius, (0,0))
     shape.collision_type = 0x5 #liquid
@@ -102,7 +102,7 @@ def add_bottle_in_sensor(space):
 
 def add_level_sensor(space):
     body = pymunk.Body()
-    body.position = (SCREEN_WIDTH/2 - 50, 380)
+    body.position = (155, 380)
     radius = 5
     shape = pymunk.Circle(body, radius, (0, 0))
     shape.collision_type = 0x4 # level_sensor
@@ -111,7 +111,7 @@ def add_level_sensor(space):
 
 def add_limit_switch(space):
     body = pymunk.Body()
-    body.position = (SCREEN_WIDTH/2 - 20, 300)
+    body.position = (200, 300)
     radius = 5
     shape = pymunk.Circle(body, radius, (0, 0))
     shape.collision_type = 0x1 # switch
@@ -120,45 +120,36 @@ def add_limit_switch(space):
 
 def add_nozzle(space):
     body = pymunk.Body()
-    global SCREEN_HEIGHT
-    body.position = (SCREEN_WIDTH/2-30, 430)
-
-    vs = [
-        (SCREEN_WIDTH/2-50, 400),
-        (SCREEN_WIDTH/2-50, 430),
-        (SCREEN_WIDTH/2-30, 400),
-        (SCREEN_WIDTH/2-30, 430)
-    ]
-
+    body.position = (180, 430)
+    vs = [(170, 400),(170, 430),(190, 400),(190, 430)]
     shape = pymunk.Poly(body, vs)
     space.add(shape)
     return shape
 
 def add_base(space):
-    body = pymunk.Body(body_type=pymunk.Body.STATIC)
-
     global SCREEN_WIDTH
     global SCREEN_HEIGHT
+
+    body = pymunk.Body(10, 100, body_type=pymunk.Body.KINEMATIC)
     body.position = (0, SCREEN_HEIGHT-50)
-    # shape = pymunk.Poly.create_box(body, (SCREEN_WIDTH, 20), ((SCREEN_WIDTH/2), -10), 0)
-    
     vs = [(0, SCREEN_HEIGHT-90),(0, SCREEN_HEIGHT-50),(SCREEN_WIDTH, SCREEN_HEIGHT-90),(SCREEN_WIDTH, SCREEN_HEIGHT-50)]
-    shape = pymunk.Poly(body, vs)
+    shape_box = pymunk.Poly(body, vs)
+
+    body.position = (0, SCREEN_HEIGHT-50)
+    shape = pymunk.Segment(body, (0, 0), (SCREEN_WIDTH, 0), 2.0)
 
     shape.friction = 1.0
-    shape.collision_type = 0x6 # base
-    space.add(body,shape)
-    return shape
+    shape.elasticity = 0.95
+    shape.collision_type = 0x19 # base
+    space.add(shape, shape_box)
+
+    return shape, shape_box
 
 def add_bottle(space):
     mass = 10
     inertia = 0xFFFFFFFFF #7*16
-    # body = pymunk.Body(mass, inertia)
     body = pymunk.Body(mass, inertia, pymunk.Body.KINEMATIC)
-
-    global SCREEN_HEIGHT
-    body.position = (130,SCREEN_HEIGHT-49)
-    print('SCREEN_HEIGHT: ', SCREEN_HEIGHT)
+    body.position = (130,301)
     body.collision_type = 0x15
     l1 = pymunk.Segment(body, (-150, 0), (-100, 0), 2.0)
     l2 = pymunk.Segment(body, (-150, 0), (-150, 100), 2.0)
@@ -218,19 +209,10 @@ def add_new_bottle(arbiter, space, *args, **kwargs):
     log.debug("Adding new bottle")
     return False
 
-def draw_base_objects(space):
-    base = add_base(space)
-    nozzle = add_nozzle(space)
-    limit_switch = add_limit_switch(space)
-    level_sensor = add_level_sensor(space)
-    bottle_in = add_bottle_in_sensor(space)
-
-    return base, nozzle, limit_switch, level_sensor, bottle_in
-
 def runWorld():
 
     log.info("RUN")
-    
+
     global SCREEN_WIDTH
     global SCREEN_HEIGHT
 
@@ -238,7 +220,6 @@ def runWorld():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
     pygame.display.set_caption("IO ICS\SCADA")
     clock = pygame.time.Clock()
-    # draw_options = pymunk.pygame_util.DrawOptions(screen)
     running = True
 
     space = pymunk.Space()
@@ -264,7 +245,11 @@ def runWorld():
     space.add_collision_handler(0x7, 0x3).begin=no_collision
 
 
-    base, nozzle, limit_switch, level_sensor, bottle_in = draw_base_objects(space)
+    base, base_box = add_base(space)
+    nozzle = add_nozzle(space)
+    limit_switch = add_limit_switch(space)
+    level_sensor = add_level_sensor(space)
+    bottle_in = add_bottle_in_sensor(space)
 
     global bottles
     bottles.append(add_bottle(space))
@@ -285,19 +270,14 @@ def runWorld():
                 running = False
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 running = False
+
             if event.type == pygame.VIDEORESIZE:
-                print(SCREEN_WIDTH, SCREEN_HEIGHT)
                 # There's some code to add back window content here.
-                screen = pygame.display.set_mode((event.w, event.h),
+                SCREEN_WIDTH = event.w
+                screen = pygame.display.set_mode((event.w, SCREEN_HEIGHT),
                                                   pygame.RESIZABLE)
 
-                SCREEN_WIDTH = event.w
-                # SCREEN_HEIGHT = event.h
-                screen.fill(THECOLORS["black"]) #
-                # screen.fill(THECOLORS["white"]) #
-                base, nozzle, limit_switch, level_sensor, bottle_in = draw_base_objects(space)
-
-                print("new-size: : ",SCREEN_WIDTH, SCREEN_HEIGHT)
+                base, base_box = add_base(space)
 
         screen.fill(THECOLORS["white"]) #
         foo = pygame.image.load('Logo.png').convert() # setting the background image
@@ -328,7 +308,7 @@ def runWorld():
                     # bottle[0].body.position = Vec2d(bottle[0].body.position.x+1,
                     #                                 bottle[0].body.position.y)
 
-                    bottle[3].position = Vec2d(bottle[3].position.x+12,
+                    bottle[3].position = Vec2d(bottle[3].position.x+0.25,
                                                 bottle[3].position.y)
 
         # Draw water balls
@@ -353,7 +333,15 @@ def runWorld():
             draw_lines(screen, bottle)
 
         # Draw the base and nozzle
-        draw_polygon(screen, base)
+        draw_polygon(screen, base_box)
+
+        # Draw bouncing segment
+        pv1 = base.body.position + base.a.rotated(base.body.angle)
+        pv2 = base.body.position + base.b.rotated(base.body.angle)
+        p1 = to_pygame(pv1)
+        p2 = to_pygame(pv2)
+        pygame.draw.lines(screen, THECOLORS['black'], False, [p1,p2])
+
         draw_polygon(screen, nozzle)
         # Draw the limit switch
         draw_ball(screen, limit_switch, THECOLORS['green'])
@@ -366,8 +354,6 @@ def runWorld():
         screen.blit(title, (10, 40))
         screen.blit(name, (10, 10))
         screen.blit(instructions, (SCREEN_WIDTH-115, 10))
-
-        # space.debug_draw(draw_options)
 
         space.step(1.0/FPS)
         pygame.display.flip()
@@ -413,4 +399,3 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
-
