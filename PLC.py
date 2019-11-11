@@ -26,7 +26,6 @@ import pymunk
 #########################################
 # inet conf
 #########################################
-# MODBUS_SERVER_IP = "scada" ##
 MODBUS_SERVER_IP = "localhost" ##
 MODBUS_SERVER_PORT = 502 ##
 
@@ -76,8 +75,8 @@ def add_ball(space):
     radius = 3
     inertia = pymunk.moment_for_circle(mass, 0, radius, (0,0))
     body = pymunk.Body(mass, inertia)
-    body._bodycontents.v_limit = 120
-    body._bodycontents.h_limit = 1
+    # body._bodycontents.v_limit = 120
+    # body._bodycontents.h_limit = 1
     x = random.randint(181,182)
     body.position = x, 410
     shape = pymunk.Circle(body, radius, (0,0))
@@ -357,5 +356,4 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
-
 
